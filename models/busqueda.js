@@ -1,8 +1,11 @@
+const fs = require('fs');
 const axios = require('axios');
 const CONF = require('../config/conf');
+const { clearScreenDown } = require('readline');
 
 class Busqueda {
-    historial = ['Tegucigalpa', 'Habana'];
+    historial = [];
+    dbPath='./db/db.json';
 
     constructor () {
 
@@ -74,6 +77,36 @@ class Busqueda {
         
 
     };
+
+    agregarHistorial(lugar=''){
+        //evitar dobles
+
+        if(!this.historial.includes(lugar)){
+            this.historial.unshift(lugar);
+        }
+        if(this.historial.length>5)this.historial.pop();
+
+        this.saveHistorial();
+        
+    }
+
+
+
+    saveHistorial(){
+        fs.writeFileSync(this.dbPath, JSON.stringify(this.historial))
+    }
+
+    loadHistorial(){
+        if(fs.existsSync(this.dbPath))
+            this.historial=JSON.parse(fs.readFileSync(this.dbPath));
+    }
+
+    limpiarHistorial(){
+        this.historial.length=0;
+        console.log(this.historial);
+        this.saveHistorial();
+    }
+
 };
 
 module.exports=Busqueda;
